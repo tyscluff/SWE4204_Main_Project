@@ -100,8 +100,10 @@ def is_admin():
             print("You will now be able to create a new room")
             create_room()
         elif second_choice == "5":
-            print("You will now be able to create a room")
-            create_room()
+            print(
+                "To create a new student you must create a new user with account type student"
+            )
+            create_user()
 
     elif first_choice == "2":
         second_choice = input(
