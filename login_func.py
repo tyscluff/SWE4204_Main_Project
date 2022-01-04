@@ -4,8 +4,6 @@ import getpass
 
 # These are the functions for the login process
 
-# I need to add a logout function
-
 # I'm opening my connection to the database
 con = sqlite3.connect("UoM.db")
 cur = con.cursor()
@@ -100,36 +98,55 @@ def create_user():
     return
 
 
+def fetch_user(email):
+    """This function will get a user from the db"""
+    cur.execute("SELECT * FROM user WHERE user_email = ?", (email,))
+    result = cur.fetchall()
+    if result == []:
+        return False
+    else:
+        return True
+
+
 def login_user():
     """This function will let a user login"""
     email = input("Enter your email: ")
     password = getpass.getpass("Enter your password: ").strip().encode("utf-8")
 
+    # cur.execute("SELECT * FROM user WHERE user_email = ?", (email,))
+    # result = cur.fetchall()
+
+    result = fetch_user(email)
+
+    while result == False:
+        print("No user was found with that email. Try entering your details again ")
+        email = input("Enter your email: ")
+        password = getpass.getpass("Enter your password: ").strip().encode("utf-8")
+        result = fetch_user(email)
+
     cur.execute("SELECT * FROM user WHERE user_email = ?", (email,))
     result = cur.fetchall()
 
-    if result == []:
-        print("No user was found with that email")
-    else:
-        user_email = result[0][0]
-        user_password = result[0][1]
-        account_type = result[0][2]
+    user_email = result[0][0]
+    user_password = result[0][1]
+    account_type = result[0][2]
 
-        correct_password = bcrypt.checkpw(password, user_password)
+    correct_password = bcrypt.checkpw(password, user_password)
 
-        wrong_attempts = 0
+    wrong_attempts = 0
 
-        while correct_password == False and wrong_attempts < 3:
-            password = (
-                getpass.getpass("Wrong password try again: ").strip().encode("utf-8")
-            )
-            wrong_attempts += 1
+    while correct_password == False and wrong_attempts < 3:
+        password = getpass.getpass("Wrong password try again: ").strip().encode("utf-8")
+        wrong_attempts += 1
 
-        if wrong_attempts == 3:
-            print("You have too many failed attempts to login. Try again later. ")
-            exit()
+    if wrong_attempts == 3:
+        print("You have too many failed attempts to login. Try again later. ")
+        exit()
 
-        print(
-            f"You were successfully logged in with the email: {user_email}. You have {account_type} access."
-        )
+    print(
+        f"You were successfully logged in with the email: {user_email}. You have {account_type} access."
+    )
     return result
+
+
+login_user()
