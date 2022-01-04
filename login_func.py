@@ -57,7 +57,9 @@ def collect_account_type():
 
 def collect_email():
     """This function will collect the email value for create user"""
-    email = input("Please enter your university email: ")
+    email = input(
+        "Please enter the university email of the user you would like to create: "
+    )
     confirm_email = input(
         f"Please enter Y to confirm that {email} is the correct email address or N to enter a different email address: "
     ).upper()
